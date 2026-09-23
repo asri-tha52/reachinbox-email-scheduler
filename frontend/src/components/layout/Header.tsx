@@ -6,6 +6,20 @@ import { slackService } from '../../services/slackService';
 import { Email } from '../../types';
 import { useNavigate } from 'react-router-dom';
 
+// Derive the Bull Board URL from the API base URL.
+// VITE_API_URL is e.g. https://backend.railway.app/api
+// We need                 https://backend.railway.app/admin/queues
+const BULL_BOARD_URL: string = (() => {
+  const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
+  if (apiUrl) {
+    // Strip trailing /api (or /api/) segment to get the backend root
+    const backendRoot = apiUrl.replace(/\/api\/?$/, '');
+    return `${backendRoot}/admin/queues`;
+  }
+  // Fallback for local dev (Vite proxy forwards /admin to localhost:5000)
+  return '/admin/queues';
+})();
+
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -136,7 +150,7 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-3">
         {/* Bull Board Link */}
         <a
-          href="/admin/queues"
+          href={BULL_BOARD_URL}
           target="_blank"
           rel="noreferrer"
           className="hidden md:inline-flex items-center gap-1 text-xs text-gray-600 hover:text-emerald-700 bg-gray-50 hover:bg-emerald-50 px-2.5 py-1.5 rounded-md border border-gray-200 transition-colors"
@@ -190,7 +204,7 @@ export const Header: React.FC = () => {
 
               <div className="py-1">
                 <a
-                  href="/admin/queues"
+                  href={BULL_BOARD_URL}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-50 flex items-center justify-between"
