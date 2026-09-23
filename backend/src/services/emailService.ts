@@ -52,6 +52,7 @@ export class EmailService {
     const now = Date.now();
 
     // Create Campaign record if batch has multiple recipients or for tracking
+    const configuredHourlyLimit = input.hourlyLimit && input.hourlyLimit > 0 ? input.hourlyLimit : config.MAX_EMAILS_PER_HOUR;
     const campaign = await prisma.campaign.create({
       data: {
         userId,
@@ -59,9 +60,17 @@ export class EmailService {
         body: input.body,
         startTime: baseStartTime,
         delayMs: effectiveDelayMs,
-        hourlyLimit: input.hourlyLimit || config.MAX_EMAILS_PER_HOUR,
+        hourlyLimit: configuredHourlyLimit,
       },
     });
+
+    // Synchronize sender's hourly limit in database with the configured rate limit
+    if (senderId && configuredHourlyLimit) {
+      await prisma.sender.update({
+        where: { id: senderId },
+        data: { hourlyLimit: configuredHourlyLimit },
+      });
+    }
 
     const scheduledEmails = [];
     const schedulingErrors = [];

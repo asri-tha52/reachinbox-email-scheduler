@@ -45,7 +45,8 @@ local current = tonumber(redis.call('get', key) or "0")
 
 if current < limit then
   local next_val = redis.call('incr', key)
-  if next_val == 1 then
+  local ttl = redis.call('ttl', key)
+  if ttl < 0 then
     redis.call('expire', key, 7200)
   end
   return {1, next_val}
@@ -79,14 +80,7 @@ export async function checkAndConsumeRateSlot(
       nextWindowDate,
     };
   } catch (err: any) {
-    console.warn(`⚠️ Redis rate limit check failed for ${senderId}, defaulting to allowed:`, err.message);
-    return {
-      allowed: true,
-      currentCount: 1,
-      limit,
-      hourKey,
-      rescheduleDelayMs: delayMs,
-      nextWindowDate,
-    };
+    console.error(`❌ Redis rate limit check failed for sender ${senderId}:`, err.message);
+    throw err;
   }
 }

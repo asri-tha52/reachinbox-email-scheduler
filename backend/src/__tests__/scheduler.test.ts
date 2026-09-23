@@ -121,4 +121,27 @@ describe('Hourly Rate Limiting Algorithm Simulation', () => {
     expect(rescheduled).toHaveLength(2);
     expect(rescheduled).toEqual(['job-4', 'job-5']);
   });
+
+  it('reproduces 3 emails with hourly limit = 2 (2 allowed, 1 rescheduled, 0 third-email sends)', () => {
+    const hourlyLimit = 2;
+    const recipients = ['bob@example.com', 'alice@example.com', 'john@example.com'];
+    let currentReserved = 0;
+    const sentEmails: string[] = [];
+    const rescheduledEmails: string[] = [];
+
+    for (const recipient of recipients) {
+      // Atomic check and reservation before SMTP send
+      if (currentReserved < hourlyLimit) {
+        currentReserved++;
+        sentEmails.push(recipient); // simulated SMTP send
+      } else {
+        rescheduledEmails.push(recipient); // DO NOT send SMTP, reschedule
+      }
+    }
+
+    expect(sentEmails).toHaveLength(2);
+    expect(sentEmails).toEqual(['bob@example.com', 'alice@example.com']);
+    expect(rescheduledEmails).toHaveLength(1);
+    expect(rescheduledEmails).toEqual(['john@example.com']);
+  });
 });
