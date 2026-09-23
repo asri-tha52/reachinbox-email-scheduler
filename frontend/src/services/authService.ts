@@ -32,6 +32,6 @@ export const authService = {
   },
 
   getGoogleAuthUrl(): string {
-    return '/api/auth/google';
+    return `${import.meta.env.VITE_API_URL || '/api'}/auth/google`;
   },
 };

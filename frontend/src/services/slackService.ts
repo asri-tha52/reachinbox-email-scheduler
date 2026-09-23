@@ -11,7 +11,7 @@ export const slackService = {
   },
 
   getConnectUrl(): string {
-    return '/api/slack/connect';
+    return `${import.meta.env.VITE_API_URL || '/api'}/slack/connect`;
   },
 
   async disconnect(): Promise<void> {
