@@ -1,4 +1,4 @@
-import { Client } from '@elastic/elasticsearch';
+import { Client, ClientOptions } from '@elastic/elasticsearch';
 import config from '../../config';
 import { SearchEmailItem } from '../../types';
 
@@ -9,11 +9,20 @@ let isElasticAvailable = false;
 
 export function getElasticsearchClient(): Client {
   if (!esClient) {
-    esClient = new Client({
+    const clientOptions: ClientOptions = {
       node: config.ELASTICSEARCH_URL,
       maxRetries: 3,
       requestTimeout: 5000,
-    });
+    };
+
+    if (config.ELASTICSEARCH_USERNAME && config.ELASTICSEARCH_PASSWORD) {
+      clientOptions.auth = {
+        username: config.ELASTICSEARCH_USERNAME,
+        password: config.ELASTICSEARCH_PASSWORD,
+      };
+    }
+
+    esClient = new Client(clientOptions);
   }
   return esClient;
 }
