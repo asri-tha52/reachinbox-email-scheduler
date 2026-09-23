@@ -16,6 +16,7 @@ const configSchema = z.object({
   DATABASE_URL: z.string().default('postgresql://reachinbox:reachinbox_secret@localhost:5432/reachinbox_db?schema=public'),
   REDIS_URL: z.string().default('redis://localhost:6379'),
   ELASTICSEARCH_URL: z.string().default('http://localhost:9200'),
+  ELASTICSEARCH_API_KEY: z.string().optional().default(''),
   ELASTICSEARCH_USERNAME: z.string().optional().default(''),
   ELASTICSEARCH_PASSWORD: z.string().optional().default(''),
 

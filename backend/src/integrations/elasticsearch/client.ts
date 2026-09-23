@@ -15,7 +15,11 @@ export function getElasticsearchClient(): Client {
       requestTimeout: 5000,
     };
 
-    if (config.ELASTICSEARCH_USERNAME && config.ELASTICSEARCH_PASSWORD) {
+    if (config.ELASTICSEARCH_API_KEY) {
+      clientOptions.auth = {
+        apiKey: config.ELASTICSEARCH_API_KEY,
+      };
+    } else if (config.ELASTICSEARCH_USERNAME && config.ELASTICSEARCH_PASSWORD) {
       clientOptions.auth = {
         username: config.ELASTICSEARCH_USERNAME,
         password: config.ELASTICSEARCH_PASSWORD,
