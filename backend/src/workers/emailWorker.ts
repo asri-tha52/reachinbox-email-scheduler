@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import config from '../config';
-import { redisConnectionOptions } from '../config/redis';
+import { getBullMQConnectionOptions } from '../config/redis';
 import { EMAIL_QUEUE_NAME, addEmailJobToQueue } from '../queues/emailQueue';
 import { EmailRepository } from '../repositories/emailRepository';
 import { UserRepository } from '../repositories/userRepository';
@@ -146,7 +146,7 @@ export function createEmailWorker(): Worker<EmailJobData> {
     EMAIL_QUEUE_NAME,
     async (job: Job<EmailJobData>) => processEmailJob(job),
     {
-      connection: redisConnectionOptions,
+      connection: getBullMQConnectionOptions(),
       concurrency: config.WORKER_CONCURRENCY,
     }
   );
