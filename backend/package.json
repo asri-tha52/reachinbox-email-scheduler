@@ -13,7 +13,8 @@
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
     "test": "vitest run",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "reset:demo": "ts-node src/scripts/resetDemoData.ts"
   },
   "dependencies": {
     "@bull-board/api": "^6.0.3",
